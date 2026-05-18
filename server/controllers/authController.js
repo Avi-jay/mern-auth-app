@@ -11,12 +11,19 @@ const generateToken = (id) => {
 //Register User
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
 
     //check fields
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
       return res.status(400).json({
         message: "Please fill all fields",
+      });
+    }
+
+    //confirmpassword
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        message: "Password do not match",
       });
     }
 
@@ -30,23 +37,22 @@ export const registerUser = async (req, res) => {
     }
 
     //Hash password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     //Create user
     const user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-    })
+      name,
+      email,
+      password: hashedPassword,
+    });
 
     res.status(201).json({
-        _id : user._id,
-        name: user.name,
-        email:user.email,
-        token: generateToken(user._id),
-    })
-
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -56,31 +62,29 @@ export const registerUser = async (req, res) => {
 
 //Login User
 
-export const loginUser = async (req,res) =>{
-    try {
-        const {email,password} = req.body;
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        //find user
-        const user = await User.findOne({email})
+    //find user
+    const user = await User.findOne({ email });
 
-        //check password
-        if(user && (await bcrypt.compare(password, user.password))){
-            res.json({
-                _id : user._id,
-                name : user.name,
-                email : user.email,
-                token : generateToken(user._id),
-            });
-        } else {
-            res.status(401).json({
-                message : "Invalid email or password",
-            });
-        }
-
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message,
-        })
+    //check password
+    if (user && (await bcrypt.compare(password, user.password))) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401).json({
+        message: "Invalid email or password",
+      });
     }
-}
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
