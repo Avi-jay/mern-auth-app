@@ -12,6 +12,18 @@ function Login() {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    setError("");
+
+    if (!email || !password) {
+      setError("Please enter login details");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter valid email");
+      return;
+    }
+
     try {
       const { data } = await axios.post(
         "http://localhost:5001/api/auth/login",
@@ -23,9 +35,13 @@ function Login() {
 
       localStorage.setItem("userInfo", JSON.stringify(data));
 
-      alert("Login Success");
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-      navigate("/");
+      if (userInfo?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/customer");
+      }
     } catch (error) {
       setError(error.response?.data?.message || "Something went to wrong");
     }

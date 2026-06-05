@@ -9,6 +9,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("customer");
   const [error, setError] = useState("");
 
   const submitHandler = async (e) => {
@@ -29,6 +30,7 @@ function Register() {
           email,
           password,
           confirmPassword,
+          role,
         },
       );
 
@@ -89,6 +91,18 @@ function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
+          </div>
+
+          <div className="form-group">
+            <label>Role</label>
+
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           <button type="submit" className="auth-btn">

@@ -11,7 +11,7 @@ const generateToken = (id) => {
 //Register User
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, password, role, confirmPassword } = req.body;
 
     //check fields
     if (!name || !email || !password || !confirmPassword) {
@@ -45,12 +45,14 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role,
     });
 
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -75,6 +77,7 @@ export const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user._id),
       });
     } else {
